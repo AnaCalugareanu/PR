@@ -30,9 +30,23 @@ foreach (var phone in phoneNodes)
 
     Console.Write(", Price: " + priceValue);
 
-    listOfProducts.Add(new Product(titleValue, result));
+    var product = new Product(titleValue, priceValue);
+
+    if (ValidateProductData(product))
+        listOfProducts.Add(product);
 
     await ExtractSubProductData(phone.InnerHtml);
+}
+
+bool ValidateProductData(Product product)
+{
+    if (!int.TryParse(product.Price, out _))
+        return false;
+
+    if (string.IsNullOrEmpty(product.Name))
+        return false;
+
+    return true;
 }
 
 Console.WriteLine();
