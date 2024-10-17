@@ -1,8 +1,10 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Globalization;
+using System.Text.RegularExpressions;
 using HtmlAgilityPack;
 using WebScraper;
 
 HttpClient client = new HttpClient();
+decimal exchangeRate = 19.5M; // Assuming 1 EUR = 18.5 MDL for conversion purposes
 
 var responseString = await client.GetStringAsync(@$"https://darwin.md/telefoane/smartphone/apple-iphone/");
 
@@ -28,7 +30,7 @@ foreach (var phone in phoneNodes)
     //only get the digits
     var priceValue = string.Join(string.Empty, Regex.Matches(result, @"\d+").OfType<Match>().Select(m => m.Value));
 
-    Console.Write(", Price: " + priceValue);
+    Console.Write(", Price (MDL): " + priceValue);
 
     var product = new Product(titleValue, priceValue);
 
@@ -38,9 +40,47 @@ foreach (var phone in phoneNodes)
     await ExtractSubProductData(phone.InnerHtml);
 }
 
+// Map: Convert MDL to EUR
+var mappedProducts = listOfProducts.Select(product =>
+{
+    decimal priceInMDL = Convert.ToDecimal(product.Price, CultureInfo.InvariantCulture);
+    decimal priceInEUR = priceInMDL / exchangeRate;
+    product.Price = priceInEUR.ToString("F2", CultureInfo.InvariantCulture);
+    return product;
+}).ToList();
+
+decimal minPrice = 1200;
+decimal maxPrice = 1500;
+
+var filteredProducts = mappedProducts.Where(product =>
+{
+    decimal price = Convert.ToDecimal(product.Price, CultureInfo.InvariantCulture);
+    return price >= minPrice && price <= maxPrice;
+}).ToList();
+
+decimal totalSum = filteredProducts
+    .Select(product => Convert.ToDecimal(product.Price, CultureInfo.InvariantCulture))
+    .Aggregate((sum, next) => sum + next);
+
+var resultData = new
+{
+    Products = filteredProducts,
+    TotalPriceInEUR = totalSum.ToString("F2", CultureInfo.InvariantCulture),
+    TimestampUTC = DateTime.UtcNow
+};
+
+Console.WriteLine("\nFiltered Products(1200-1500 EUR):");
+foreach (var product in filteredProducts)
+{
+    Console.WriteLine($"Title: {product.Name}, Price (EUR): {product.Price}");
+}
+
+Console.WriteLine($"\nTotal Price of Filtered Products (EUR): {resultData.TotalPriceInEUR}");
+Console.WriteLine($"Timestamp UTC: {resultData.TimestampUTC}");
+
 bool ValidateProductData(Product product)
 {
-    if (!int.TryParse(product.Price, out _))
+    if (!decimal.TryParse(product.Price, out _))
         return false;
 
     if (string.IsNullOrEmpty(product.Name))
@@ -48,8 +88,6 @@ bool ValidateProductData(Product product)
 
     return true;
 }
-
-Console.WriteLine();
 
 async Task ExtractSubProductData(string text)
 {
