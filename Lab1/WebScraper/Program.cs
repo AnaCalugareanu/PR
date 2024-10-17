@@ -1,12 +1,21 @@
 ﻿using System.Globalization;
+using System.Net.Security;
+using System.Net.Sockets;
+using System.Text;
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
 using WebScraper;
 
 HttpClient client = new HttpClient();
 decimal exchangeRate = 19.5M; // Assuming 1 EUR = 18.5 MDL for conversion purposes
+string responseString = string.Empty;
 
-var responseString = await client.GetStringAsync(@$"https://darwin.md/telefoane/smartphone/apple-iphone/");
+Console.Write("Enter 1 to read using HTML Library, any other key for TCP Socket: ");
+var key = Console.Read();
+if (key == 49) //in Ascii 1=49
+    responseString = await client.GetStringAsync(@$"https://darwin.md/telefoane/smartphone/apple-iphone/");
+else
+    responseString = await GetWithTCPSocket(@$"https://darwin.md/telefoane/smartphone/apple-iphone");
 
 var htmlDoc = new HtmlDocument();
 htmlDoc.LoadHtml(responseString);
@@ -133,6 +142,56 @@ async Task ExtractSubProductData(string text)
             {
                 Console.WriteLine("Memorie RAM not found.");
             }
+        }
+    }
+}
+
+async Task<string> GetWithTCPSocket(string url)
+{
+    Uri uri = new Uri(url);
+    string host = uri.Host;
+    string path = uri.PathAndQuery;
+
+    using (TcpClient client = new TcpClient(host, 443))
+    using (NetworkStream networkStream = client.GetStream())
+    using (SslStream sslStream = new SslStream(networkStream, false,
+        new RemoteCertificateValidationCallback((sender, certificate, chain, sslPolicyErrors) => true),
+        null))
+    {
+        await sslStream.AuthenticateAsClientAsync(host);
+
+        string httpRequest = $"GET {path} HTTP/1.1\r\n" +
+                             $"Host: {host}\r\n" +
+                             "Connection: close\r\n" +
+                             "\r\n";
+
+        byte[] requestBytes = Encoding.ASCII.GetBytes(httpRequest);
+        await sslStream.WriteAsync(requestBytes, 0, requestBytes.Length);
+        await sslStream.FlushAsync();
+
+        StringBuilder responseBuilder = new StringBuilder();
+        char[] buffer = new char[4096];
+        int bytesRead;
+
+        using (StreamReader reader = new StreamReader(sslStream, Encoding.UTF8))
+        {
+            while ((bytesRead = await reader.ReadAsync(buffer, 0, buffer.Length)) > 0)
+            {
+                responseBuilder.Append(buffer, 0, bytesRead);
+            }
+        }
+
+        string fullResponse = responseBuilder.ToString();
+
+        int headerEndIndex = fullResponse.IndexOf("\r\n\r\n");
+
+        if (headerEndIndex != -1)
+        {
+            return fullResponse.Substring(headerEndIndex + 4);
+        }
+        else
+        {
+            return string.Empty;
         }
     }
 }
