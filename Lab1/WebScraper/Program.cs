@@ -87,6 +87,15 @@ foreach (var product in filteredProducts)
 Console.WriteLine($"\nTotal Price of Filtered Products (EUR): {resultData.TotalPriceInEUR}");
 Console.WriteLine($"Timestamp UTC: {resultData.TimestampUTC}");
 
+string jsonOutput = SerializeToJson(listOfProducts);
+string xmlOutput = SerializeToXml(listOfProducts);
+
+Console.WriteLine("JSON Output:");
+Console.WriteLine(jsonOutput);
+
+Console.WriteLine("\nXML Output:");
+Console.WriteLine(xmlOutput);
+
 bool ValidateProductData(Product product)
 {
     if (!decimal.TryParse(product.Price, out _))
@@ -194,4 +203,48 @@ async Task<string> GetWithTCPSocket(string url)
             return string.Empty;
         }
     }
+}
+
+string SerializeToJson(List<Product> products)
+{
+    StringBuilder jsonBuilder = new StringBuilder();
+    jsonBuilder.Append("{\n  \"Products\": [\n");
+
+    for (int i = 0; i < products.Count; i++)
+    {
+        Product product = products[i];
+        jsonBuilder.Append("    {\n");
+        jsonBuilder.AppendFormat("      \"Name\": \"{0}\",\n", product.Name);
+        jsonBuilder.AppendFormat("      \"Price\": \"{0}\"\n", product.Price);
+        jsonBuilder.Append("    }");
+
+        if (i < products.Count - 1)
+        {
+            jsonBuilder.Append(",\n");
+        }
+        else
+        {
+            jsonBuilder.Append("\n");
+        }
+    }
+
+    jsonBuilder.Append("  ]\n}");
+    return jsonBuilder.ToString();
+}
+
+string SerializeToXml(List<Product> products)
+{
+    StringBuilder xmlBuilder = new StringBuilder();
+    xmlBuilder.Append("<Products>\n");
+
+    foreach (var product in products)
+    {
+        xmlBuilder.Append("  <Product>\n");
+        xmlBuilder.AppendFormat("    <Name>{0}</Name>\n", product.Name);
+        xmlBuilder.AppendFormat("    <Price>{0}</Price>\n", product.Price);
+        xmlBuilder.Append("  </Product>\n");
+    }
+
+    xmlBuilder.Append("</Products>");
+    return xmlBuilder.ToString();
 }
