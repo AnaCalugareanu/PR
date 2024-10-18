@@ -1,0 +1,10 @@
+version: '3.8'
+services:
+  lab1-console-app:
+    build:
+      context: .
+      dockerfile: Dockerfile 
+    environment:
+      - ENV_VAR=Development
+    stdin_open: true
+    tty: true  
