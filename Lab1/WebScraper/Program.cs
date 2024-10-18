@@ -6,6 +6,9 @@ using System.Text.RegularExpressions;
 using HtmlAgilityPack;
 using WebScraper;
 
+//Task1 I Exist :)
+
+//Task 2
 HttpClient client = new HttpClient();
 decimal exchangeRate = 19.5M; // Assuming 1 EUR = 18.5 MDL for conversion purposes
 string responseString = string.Empty;
@@ -15,8 +18,9 @@ var key = Console.Read();
 if (key == 49) //in Ascii 1=49
     responseString = await client.GetStringAsync(@$"https://darwin.md/telefoane/smartphone/apple-iphone/");
 else
-    responseString = await GetWithTCPSocket(@$"https://darwin.md/telefoane/smartphone/apple-iphone");
+    responseString = await GetWithTCPSocket(@$"https://darwin.md/telefoane/smartphone/apple-iphone"); //Task 7
 
+//Task 3
 var htmlDoc = new HtmlDocument();
 htmlDoc.LoadHtml(responseString);
 
@@ -43,12 +47,15 @@ foreach (var phone in phoneNodes)
 
     var product = new Product(titleValue, priceValue);
 
+    //Task 5
     if (ValidateProductData(product))
         listOfProducts.Add(product);
 
+    //Task 4
     await ExtractSubProductData(phone.InnerHtml);
 }
 
+//Task 6
 // Map: Convert MDL to EUR
 var mappedProducts = listOfProducts.Select(product =>
 {
@@ -87,6 +94,7 @@ foreach (var product in filteredProducts)
 Console.WriteLine($"\nTotal Price of Filtered Products (EUR): {resultData.TotalPriceInEUR}");
 Console.WriteLine($"Timestamp UTC: {resultData.TimestampUTC}");
 
+// Task 8
 string jsonOutput = SerializeToJson(listOfProducts);
 string xmlOutput = SerializeToXml(listOfProducts);
 
@@ -95,6 +103,18 @@ Console.WriteLine(jsonOutput);
 
 Console.WriteLine("\nXML Output:");
 Console.WriteLine(xmlOutput);
+
+// Task 9
+string customSerializedData = CustomSerialize(listOfProducts);
+Console.WriteLine("Custom Serialized Data:");
+Console.WriteLine(customSerializedData);
+
+List<Product> deserializedProducts = CustomDeserialize(customSerializedData);
+Console.WriteLine("\nDeserialized Products:");
+foreach (var product in deserializedProducts)
+{
+    Console.WriteLine($"Name: {product.Name}, Price: {product.Price}");
+}
 
 bool ValidateProductData(Product product)
 {
@@ -247,4 +267,30 @@ string SerializeToXml(List<Product> products)
 
     xmlBuilder.Append("</Products>");
     return xmlBuilder.ToString();
+}
+
+string CustomSerialize(List<Product> products)
+{
+    StringBuilder serializedData = new StringBuilder();
+    foreach (var product in products)
+    {
+        serializedData.Append($"{product.Name}|{product.Price}\n");
+    }
+    return serializedData.ToString();
+}
+
+List<Product> CustomDeserialize(string serializedData)
+{
+    List<Product> deserializedProducts = new List<Product>();
+    string[] productLines = serializedData.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+
+    foreach (var line in productLines)
+    {
+        string[] fields = line.Split('|');
+        if (fields.Length == 2)
+        {
+            deserializedProducts.Add(new Product(fields[0], fields[1]));
+        }
+    }
+    return deserializedProducts;
 }
