@@ -13,9 +13,9 @@ namespace ChatRoom.Repositories
             this.context = context;
         }
 
-        public List<Product> GetProducts()
+        public List<Product> GetProducts(int offset = 0, int limit = 5)
         {
-            var products = context.Products.ToList();
+            var products = context.Products.Skip(offset).Take(limit).ToList();
             return products;
         }
 
@@ -55,6 +55,12 @@ namespace ChatRoom.Repositories
                 return;
 
             context.Products.Remove(productToBeDeleted);
+            context.SaveChanges();
+        }
+
+        public void InsertProductsByFile(List<Product> products)
+        {
+            context.Products.AddRange(products);
             context.SaveChanges();
         }
     }
