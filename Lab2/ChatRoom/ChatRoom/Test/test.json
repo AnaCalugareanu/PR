@@ -1,0 +1,27 @@
+[
+    {
+        "ProductName": "IPhone 12",
+        "Price": 999.99,
+        "Specifications": "6GB RAM, 128GB Storage, A14 Bionic Chip"
+    },
+    {
+        "ProductName": "Samsung Galaxy S21",
+        "Price": 799.99,
+        "Specifications": "8GB RAM, 256GB Storage, Exynos 2100"
+    },
+    {
+        "ProductName": "Google Pixel 5",
+        "Price": 699.99,
+        "Specifications": "8GB RAM, 128GB Storage, Snapdragon 765G"
+    },
+    {
+        "ProductName": "OnePlus 9",
+        "Price": 729.99,
+        "Specifications": "8GB RAM, 128GB Storage, Snapdragon 888"
+    },
+    {
+        "ProductName": "Xiaomi Mi 11",
+        "Price": 749.99,
+        "Specifications": "8GB RAM, 256GB Storage, Snapdragon 888"
+    }
+]

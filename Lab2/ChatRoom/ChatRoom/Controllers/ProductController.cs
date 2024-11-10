@@ -46,41 +46,21 @@ namespace ChatRoom.Controllers
             return Ok();
         }
 
-        [HttpPost("upload")]
-        public async Task<IActionResult> UploadFile([FromForm] IFormFile file)
+        [HttpPost("uploadJsonFile")]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> CreateFile(IFormFile file)
         {
-            if (file == null || file.Length == 0)
-                return BadRequest("Please upload a valid file.");
-
-            if (Path.GetExtension(file.FileName).ToLower() != ".json")
-                return BadRequest("Only JSON files are allowed.");
-
-            List<Product> products;
-
-            using (var streamReader = new StreamReader(file.OpenReadStream()))
+            if (file.Length == 0 || file.Length > 20971520 || file.ContentType != "application/json")
             {
-                var fileContent = await streamReader.ReadToEndAsync();
-                try
-                {
-                    products = JsonSerializer.Deserialize<List<Product>>(fileContent);
-                }
-                catch (JsonException)
-                {
-                    return BadRequest("Invalid JSON format.");
-                }
+                return BadRequest("No file or an invalid one has been inputted. Only JSON files are accepted.");
             }
 
-            foreach (var product in products)
-            {
-                if (string.IsNullOrEmpty(product.ProductName) || product.Price <= 0)
-                {
-                    return BadRequest("Invalid product data: ProductName is required and Price must be positive.");
-                }
-            }
+            var resultMessage = await productRepository.ProcessAndInsertProductsFromFile(file);
 
-            productRepository.InsertProductsByFile(products);
+            if (resultMessage.StartsWith("Invalid"))
+                return BadRequest(resultMessage);
 
-            return Ok("Products successfully uploaded and saved.");
+            return Ok(resultMessage);
         }
     }
 }
