@@ -3,6 +3,7 @@ using System;
 using ChatRoom.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ChatRoom.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241110133300_UpdateDatabase2")]
+    partial class UpdateDatabase2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.10");
@@ -29,6 +32,17 @@ namespace ChatRoom.Migrations
                     b.HasKey("ChatRoomEntityId");
 
                     b.ToTable("ChatRooms");
+                });
+
+            modelBuilder.Entity("ChatRoom.Models.ChatRoomUser", b =>
+                {
+                    b.Property<int>("ChatRoomId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.ToTable("ChatRoomUsers");
                 });
 
             modelBuilder.Entity("ChatRoom.Models.Product", b =>
@@ -57,6 +71,9 @@ namespace ChatRoom.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("ChatRoomId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("UserName")
                         .HasColumnType("TEXT");
 
@@ -78,32 +95,6 @@ namespace ChatRoom.Migrations
                     b.HasIndex("UsersUserId");
 
                     b.ToTable("ChatRoomEntityUser");
-                });
-
-            modelBuilder.Entity("Message", b =>
-                {
-                    b.Property<int>("MessageId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("ChatRoom")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("MessageContent")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("Timestamp")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("User")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("MessageId");
-
-                    b.ToTable("Messages");
                 });
 
             modelBuilder.Entity("ChatRoomEntityUser", b =>

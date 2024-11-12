@@ -1,0 +1,69 @@
+﻿@page "/chatroom"
+@using global::ChatRoom.Services
+@inject ChatService ChatService
+
+<h3>Chat Room</h3>
+
+
+<input @bind="RoomName" placeholder="Room Name" />
+<input @bind="Username" placeholder="Username" />
+<input @bind="Message" placeholder="Message" />
+
+<button @onclick="JoinRoom">Join Room</button>
+<button @onclick="SendMessage">Send Message</button>
+<button @onclick="LeaveRoom">Leave Room</button>
+
+<ul>
+    @foreach (var message in Messages)
+    {
+        <li>@message</li>
+    }
+</ul>
+
+@code {
+    private string RoomName { get; set; }
+    private string Message { get; set; }
+    private string Username {get; set; }
+    private List<string> Messages { get; set; } = new List<string>();
+
+    protected override void OnInitialized()
+    {
+        // Subscribe to OnMessageReceived event
+        ChatService.OnMessageReceived += (message) =>
+        {
+            Messages.Add(message);
+            InvokeAsync(StateHasChanged); // Refresh UI when a new message is received
+        };
+    }
+
+    private async Task JoinRoom()
+    {
+        if (string.IsNullOrWhiteSpace(RoomName) || string.IsNullOrWhiteSpace(Username))
+        {
+            Messages.Add("Please enter a valid room name and username.");
+            return;
+        }
+
+        await ChatService.StartConnection(RoomName, Username); // Pass both RoomName and Username here
+        Messages.Add($"You have joined the room '{RoomName}' as {Username}.");
+    }
+
+
+    private async Task SendMessage()
+    {
+        if (string.IsNullOrWhiteSpace(Message))
+        {
+            return; // Prevent sending empty messages
+        }
+
+        await ChatService.SendMessage(RoomName, Username, Message); // Send message with username
+        Message = string.Empty; // Clear message input after sending
+    }
+
+
+    private async Task LeaveRoom()
+    {
+        await ChatService.LeaveRoom(RoomName, Username); // Leave room
+        Messages.Clear(); // Clear messages from the UI
+    }
+}

@@ -1,6 +1,4 @@
-﻿using System.Text.Json;
-using ChatRoom.Models;
-using ChatRoom.Models.Dtos;
+﻿using ChatRoom.Models.Dtos;
 using ChatRoom.Repositories;
 using Microsoft.AspNetCore.Mvc;
 

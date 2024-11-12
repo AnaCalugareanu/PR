@@ -3,14 +3,14 @@ using ChatRoom.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddSignalR();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AppDbContext>();
 builder.Services.AddScoped<ProductRepository>();
+builder.WebHost.UseUrls("http://localhost:5000", "http://localhost:5001");
 
 var app = builder.Build();
 
@@ -21,10 +21,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
-
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<ChatHub>("/chathub");
 
 app.Run();
