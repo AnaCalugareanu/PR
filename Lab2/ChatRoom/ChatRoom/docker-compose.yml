@@ -1,0 +1,18 @@
+﻿version: '3.8' # Docker Compose file format version
+
+services:
+  sqlserver: # Name of the service
+    image: mcr.microsoft.com/mssql/server:2019-latest # SQL Server image
+    container_name: sqlserver_container # A name for your container
+    ports:
+      - "1433:1433" # Map the SQL Server port to your local machine
+    environment:
+      SA_PASSWORD: "YourStrong!Password" # Password for the SQL Server administrator (sa user)
+      ACCEPT_EULA: "Y" # Required to accept Microsoft's SQL Server EULA
+      MSSQL_PID: "Express" # Specifies the edition (Express in this case)
+    volumes:
+      - sql_data:/var/opt/mssql # Volume to persist database files outside the container
+
+volumes:
+  sql_data:
+    driver: local # Local volume to store database data

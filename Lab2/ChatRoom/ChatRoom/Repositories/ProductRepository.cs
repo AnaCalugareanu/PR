@@ -25,7 +25,7 @@ namespace ChatRoom.Repositories
             var product = new Product
             {
                 ProductName = productDto.ProductName,
-                Price = productDto.Price,
+                Price = productDto.Price.ToString(),
                 Specifications = productDto.Specifications,
             };
 
@@ -41,7 +41,7 @@ namespace ChatRoom.Repositories
                 return;
 
             productToBeUpdated.ProductName = updateProductDto.ProductName ?? productToBeUpdated.ProductName;
-            productToBeUpdated.Price = updateProductDto.Price ?? productToBeUpdated.Price;
+            productToBeUpdated.Price = updateProductDto.Price?.ToString() ?? productToBeUpdated.Price;
             productToBeUpdated.Specifications = updateProductDto.Specifications ?? productToBeUpdated.Specifications;
 
             context.Products.Update(productToBeUpdated);
@@ -77,7 +77,7 @@ namespace ChatRoom.Repositories
 
             foreach (var product in products)
             {
-                if (string.IsNullOrEmpty(product.ProductName) || product.Price <= 0)
+                if (string.IsNullOrEmpty(product.ProductName) || decimal.Parse(product.Price) <= 0)
                 {
                     return "Invalid product data: ProductName is required and Price must be positive.";
                 }
