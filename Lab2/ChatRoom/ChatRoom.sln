@@ -5,7 +5,12 @@ VisualStudioVersion = 17.9.34723.18
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChatRoom", "ChatRoom\ChatRoom.csproj", "{D6292A48-36F8-4947-9222-59927B854B02}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatRoom.Client", "ChatRoom.Client\ChatRoom.Client.csproj", "{B391F268-BCAC-426E-AD77-E9681C9F501B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChatRoom.Client", "ChatRoom.Client\ChatRoom.Client.csproj", "{B391F268-BCAC-426E-AD77-E9681C9F501B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{312FA6D8-CADF-4E08-B187-ED87EB0BAEB6}"
+	ProjectSection(SolutionItems) = preProject
+		Dockerfile.dockerfile = Dockerfile.dockerfile
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

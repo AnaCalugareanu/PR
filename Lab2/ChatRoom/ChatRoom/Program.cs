@@ -10,7 +10,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AppDbContext>();
 builder.Services.AddScoped<ProductRepository>();
-builder.WebHost.UseUrls("http://localhost:5000", "http://localhost:5001");
+//builder.WebHost.UseUrls("http://localhost:5000", "http://localhost:5001");
 
 var app = builder.Build();
 

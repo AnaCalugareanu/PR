@@ -13,7 +13,7 @@ namespace ChatRoom.Services
             if (_connection == null)
             {
                 _connection = new HubConnectionBuilder()
-                    .WithUrl("http://localhost:5001/chathub") // Update the URL if necessary
+                    .WithUrl("http://172.20.0.3/chathub") // Update the URL if necessary
                     .Build();
 
                 // Handle incoming messages from the server

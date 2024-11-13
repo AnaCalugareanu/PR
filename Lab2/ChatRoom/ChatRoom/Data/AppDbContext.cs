@@ -17,7 +17,7 @@ namespace ChatRoom.Data
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
             //options.UseSqlite("Data Source=chatroom.db");
-            options.UseSqlServer("Server=localhost,1433;Database=ChatApp;User Id=sa;Password=YourStrong!Password;TrustServerCertificate=True;");
+            options.UseSqlServer("Server=172.20.0.2,1433,1433;Database=ChatApp;User Id=sa;Password=YourStrong!Password;TrustServerCertificate=True;");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
